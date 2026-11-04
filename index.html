@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Wikhippo</title>
+<style>
+:root{--bg:#eceef2;--card:#fff;--ink:#14171f;--mute:#667085;--line:#d9dde5;--acc:#2b4cff;--accink:#fff;--bad:#c2362b;--ok:#1f8a4c}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1117;--card:#171b24;--ink:#e8eaf0;--mute:#8f98a8;--line:#2a303c;--acc:#ffb020;--accink:#1a1300;--bad:#ff8577;--ok:#5fd18c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Avenir Next","Segoe UI Variable","Segoe UI",system-ui,sans-serif}
+header{display:flex;align-items:baseline;gap:10px;padding:14px 24px;border-bottom:1px solid var(--line);background:var(--card)}
+.brand{font-weight:800;font-size:1.25rem;letter-spacing:-.02em;cursor:pointer}
+.by{color:var(--mute);font-size:.85rem}
+main{max-width:860px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:1.7rem;letter-spacing:-.02em;margin:6px 0 4px}h2{font-size:1.05rem;margin:26px 0 8px}
+.tag{color:var(--mute);font-size:.88rem;margin:2px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0}
+.click{cursor:pointer}.click:hover{border-color:var(--acc)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.sp{flex:1}
+button,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 13px;cursor:pointer}
+button.p{background:var(--acc);border-color:var(--acc);color:var(--accink);font-weight:600}
+button.bad{color:var(--bad)}button:disabled{opacity:.45;cursor:default}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+input,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 11px;width:100%}
+.row input{flex:1;min-width:140px;width:auto}
+textarea{min-height:420px;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace}
+a.back{color:var(--mute);cursor:pointer;text-decoration:underline}
+.drop{border:2px dashed var(--line);border-radius:10px;padding:16px;text-align:center;color:var(--mute)}
+.sheet{font:16px/1.65 "Iowan Old Style","Palatino Linotype",Georgia,serif;padding:26px 34px;max-width:70ch}
+.sheet h1{font:800 1.5rem/1.2 "Avenir Next","Segoe UI",system-ui,sans-serif;border-bottom:2px solid var(--acc);padding-bottom:6px}
+.sheet h2{font:700 1.05rem "Avenir Next","Segoe UI",system-ui,sans-serif;color:var(--acc);margin:22px 0 6px}
+.sheet blockquote{margin:10px 0;padding:6px 14px;border-left:3px solid var(--acc);color:var(--mute)}
+.sheet li{margin:3px 0}.sheet code{background:var(--bg);padding:0 4px;border-radius:4px}
+.big{font-size:1.25rem;min-height:90px;display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;white-space:pre-wrap}
+.bar{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin:10px 0}.bar i{display:block;height:100%;background:var(--acc)}
+.ch{display:block;width:100%;text-align:left;margin:6px 0}.ch.good{border-color:var(--ok);color:var(--ok)}.ch.wrong{border-color:var(--bad);color:var(--bad)}
+#st{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:8px;display:none;max-width:90%}
+dialog{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:12px;width:min(520px,92vw);padding:20px}
+dialog label{display:block;margin:12px 0 4px;font-weight:600;font-size:.9rem}
+#splash{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;transition:opacity .35s}
+#splash.out{opacity:0;pointer-events:none}
+#splash img{width:min(560px,90vw);border-radius:12px;border:1px solid var(--line)}
+#splash b{font-size:2rem;letter-spacing:-.03em}
+</style>
+</head>
+<body>
+<div id="splash"><img src="intro.gif" alt=""><b>Wikhippo</b><span class="by">par @hippo.reporter</span><button class="p" id="go">Entrer</button></div>
+<header><img src="logo.png" alt="" width="30" height="30" style="align-self:center"><span class="brand" id="home">Wikhippo</span><span class="by">par @hippo.reporter</span><span class="sp" style="flex:1"></span><button id="set">Réglages</button></header>
+<main id="app"></main>
+<div id="st"></div>
+<dialog id="dlg">
+  <b style="font-size:1.1rem">Réglages</b>
+  <label for="k">Clé API Anthropic <span class="tag" id="kst"></span></label>
+  <input id="k" type="password" placeholder="sk-ant-…" autocomplete="off">
+  <label for="m">Modèle (laisse vide pour le modèle par défaut)</label>
+  <input id="m" placeholder="claude-sonnet-5-5">
+  <label for="t">Jeton d’intégration Notion <span class="tag" id="tst"></span></label>
+  <input id="t" type="password" placeholder="ntn_… ou secret_…" autocomplete="off">
+  <label for="pp">Page Notion où envoyer les fiches (lien)</label>
+  <input id="pp" placeholder="https://www.notion.so/…">
+  <p class="tag">La clé et le jeton sont chiffrés et restent sur cet ordinateur. Partage la page de destination et ta base de cours avec ton intégration Notion.</p>
+  <div class="row" style="margin-top:14px"><span class="sp"></span><button id="x">Fermer</button><button class="p" id="sv">Enregistrer</button></div>
+</dialog>
+<script src="../node_modules/pdfjs-dist/build/pdf.min.js"></script>
+<script src="app.js"></script>
+<script>const sp=document.getElementById("splash"),bye=()=>{sp.classList.add("out");setTimeout(()=>sp.remove(),400)};document.getElementById("go").onclick=bye;sp.onclick=bye;setTimeout(bye,4500);</script>
+</body>
+</html>
